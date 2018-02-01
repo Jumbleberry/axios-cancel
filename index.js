@@ -50,11 +50,11 @@ export default function patchAxios(axios, vue, options) {
    */
   axios.cancelComponentPendingRequests = (uid) => {
     console.log('Canceling component ' +  uid + ' pending requests...')
-    requestManager.pendingRequests.forEach(function(req) {
-      if (req.split('-')[0] == uid) {
-        axios.cancel(req)
+    for (var requestId in requestManager.getPendingRequests()) {
+      if (requestId.split('-')[0] == uid) {
+        axios.cancel(requestId)
       }
-    });
+    }
   };
 
   /**
