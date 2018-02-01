@@ -1,6 +1,6 @@
 {
   "name": "axios-cancel",
-  "version": "0.1",
+  "version": "1.0.0-dev",
   "description": "Simplify cancellation of http requests when using the awesome axios library",
   "main": "dist/index.js",
   "scripts": {
