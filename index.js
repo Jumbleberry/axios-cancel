@@ -1,8 +1,9 @@
 import { CancelToken } from 'axios';
 import RequestManager from './lib/RequestManager';
 import extend from './lib/extend';
+import lifeCycle from './lib/lifeCycle';
 
-export default function patchAxios(axios, options) {
+export default function patchAxios(axios, vue, options) {
 
   const defaults = {
     debug: false,
@@ -10,6 +11,9 @@ export default function patchAxios(axios, options) {
   const settings = extend({}, defaults, options);
 
   const requestManager = new RequestManager(settings);
+
+  // Mount global mixin on Vue root instance
+  vue.mixin(lifeCycle);
 
   /**
    * Global request interceptor
@@ -38,6 +42,10 @@ export default function patchAxios(axios, options) {
     }
     return response;
   });
+
+  axios.cancelComponentPendingRequests = (uid) => {
+    console.log('cancelComponentPendingRequests...')
+  };
 
   /**
    * Global axios method to cancel a single request by ID
