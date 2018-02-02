@@ -22,7 +22,11 @@ export default function patchAxios(axios, vue, options) {
    *  - added to the `pendingRequests` hash if not, with a cancel function
    */
   axios.interceptors.request.use((config) => {
-    const { requestId, context } = config;
+    let { requestId, context } = config;
+
+    if (context && !requestId)
+      config.requestId = requestId = 'auto-generated-id-' + Math.floor(Math.random() * 100000000);
+
     if (requestId) {
       const source = CancelToken.source();
       config.cancelToken = source.token;
@@ -49,8 +53,8 @@ export default function patchAxios(axios, vue, options) {
    * @param uid: string
    */
   axios.cancelComponentPendingRequests = (context) => {
-    for (let requestId in requestManager.getContextMapping()[context]) {
-      axios.cancel(requestId, context)
+    if (context) {
+      requestManager.cancelContextRequests(context);
     }
   };
 
