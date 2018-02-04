@@ -47,25 +47,14 @@ export default function patchAxios(axios, vue, options) {
     return response;
   });
 
-
-  /**
-   * Cancel all pending requests from the component
-   * @param uid: string
-   */
-  axios.cancelComponentPendingRequests = (context) => {
-    if (context) {
-      requestManager.cancelContextRequests(context);
-    }
-  };
-
   /**
    * Global axios method to cancel a single request by ID
    * @param requestId: string
    * @param reason
    */
-  axios.cancel = (requestId, context, reason) => {
-    if (requestId) {
-      requestManager.cancelRequest(requestId, context, reason);
+  axios.cancel = (requestIdOrContext, reason) => {
+    if (requestIdOrContext) {
+      requestManager.cancelRequest(requestIdOrContext, reason);
     }
   };
 
