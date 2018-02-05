@@ -22,11 +22,15 @@ export default function patchAxios(axios, vue, options) {
    *  - added to the `pendingRequests` hash if not, with a cancel function
    */
   axios.interceptors.request.use((config) => {
-    const { requestId } = config;
+    let { requestId, context } = config;
+
+    if (context && !requestId)
+      config.requestId = requestId = 'auto-generated-id-' + Math.floor(Math.random() * 100000000);
+
     if (requestId) {
       const source = CancelToken.source();
       config.cancelToken = source.token;
-      requestManager.addRequest(requestId, source.cancel);
+      requestManager.addRequest(requestId, context, source.cancel);
     }
     return config;
   });
@@ -36,34 +40,21 @@ export default function patchAxios(axios, vue, options) {
    * Check for the `requestId` and remove it from the `pendingRequests` hash
    */
   axios.interceptors.response.use((response) => {
-    const { requestId } = response.config;
+    const { requestId, context } = response.config;
     if (requestId) {
-      requestManager.removeRequest(requestId);
+      requestManager.removeRequest(requestId, context);
     }
     return response;
   });
-
-
-  /**
-   * Cancel all pending requests from the component
-   * @param uid: string
-   */
-  axios.cancelComponentPendingRequests = (uid) => {
-    for (var requestId in requestManager.getPendingRequests()) {
-      if (requestId.split('-')[0] == uid) {
-        axios.cancel(requestId)
-      }
-    }
-  };
 
   /**
    * Global axios method to cancel a single request by ID
    * @param requestId: string
    * @param reason
    */
-  axios.cancel = (requestId, reason) => {
-    if (requestId) {
-      requestManager.cancelRequest(requestId, reason);
+  axios.cancel = (requestIdOrContext, reason) => {
+    if (requestIdOrContext) {
+      requestManager.cancelRequest(requestIdOrContext, reason);
     }
   };
 
