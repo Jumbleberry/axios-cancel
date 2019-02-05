@@ -42,7 +42,7 @@ export default function patchAxios(axios, vue, options) {
       config.requestId = requestId = 'auto-generated-id-' + Math.floor(Math.random() * 100000000);
     }
 
-    if (requestId && config.__cacheable === true) {
+    if (requestId && cacheManager.isCacheable(config)) {
       const cachedResponseData = cacheManager.getResponse(requestId);
       if (cachedResponseData !== null) {
         // Replace default request adapter so it returns the cached response immediately
@@ -74,7 +74,7 @@ export default function patchAxios(axios, vue, options) {
     const { requestId, context, __cached } = response.config;
     if (requestId && !__cached) {
       requestManager.removeRequest(requestId, context);
-      if (response.config.__cacheable === true) {
+      if (cacheManager.isValidResponse(response)) {
         cacheManager.addResponse(requestId, response);
       }
       dispatchConfigEvent('onRequestComplete', {
