@@ -37,11 +37,12 @@ export default function patchAxios(axios, vue, options) {
    */
   axios.interceptors.request.use(config => {
     let { requestId, context } = config;
-
+    if (config.method !== 'get') {
+      return config;
+    }
     if (context && !requestId) {
       config.requestId = requestId = 'auto-generated-id-' + Math.floor(Math.random() * 100000000);
     }
-
     if (requestId && cacheManager.isCacheable(config)) {
       const cachedResponseData = cacheManager.getResponse(requestId);
       if (cachedResponseData !== null) {
@@ -56,12 +57,13 @@ export default function patchAxios(axios, vue, options) {
             request: config
           });
         };
-      } else {
-        dispatchConfigEvent('onRequestStart', { config: config, payload: config });
-        const source = CancelToken.source();
-        config.cancelToken = source.token;
-        requestManager.addRequest(requestId, context, source.cancel);
       }
+    }
+    if (!cachedResponseData) {
+      dispatchConfigEvent('onRequestStart', { config: config, payload: config });
+      const source = CancelToken.source();
+      config.cancelToken = source.token;
+      requestManager.addRequest(requestId, context, source.cancel);
     }
     return config;
   });
