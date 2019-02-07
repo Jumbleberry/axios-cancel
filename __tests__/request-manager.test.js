@@ -19,7 +19,7 @@ describe('RequestManager', () => {
 
     requestManager.addRequest(reqId, () => { });
     expect(requestManager.has(reqId)).toBeTruthy();
-    
+
     requestManager.removeRequest(reqId);
     expect(requestManager.has(reqId)).toBeFalsy();
   });
@@ -79,7 +79,7 @@ describe('RequestManager', () => {
     requestManager.addRequest(reqId1, cancelFn1);
     requestManager.addRequest(reqId2, cancelFn2);
     requestManager.addRequest(reqId3, cancelFn3);
-    
+
     requestManager.cancelAllRequests();
 
     expect(cancelFn1).toHaveBeenCalled();

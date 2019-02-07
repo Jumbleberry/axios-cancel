@@ -1,4 +1,4 @@
-import axios, { Cancel }  from 'axios';
+import axios, { Cancel } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import axiosCancel from '../index.js';
 
@@ -8,11 +8,11 @@ axiosCancel(axios, {
 
 const url = 'http://reddit.com';
 
-const mock = new MockAdapter(axios, {delayResponse: 200});
+const mock = new MockAdapter(axios, { delayResponse: 200 });
 
 mock.onGet(url).reply(200, {
   users: [
-    {id: 1, name: 'John Smith'}
+    { id: 1, name: 'John Smith' }
   ]
 });
 
@@ -21,7 +21,7 @@ describe('axios cancel', () => {
   test('normal request', () => {
     return axios.get(url)
       .then((res) => {
-        const {data} = res;
+        const { data } = res;
         expect(data.users).toBeTruthy();
       }).catch((thrown) => {
         expect(thrown).toBeNull();
@@ -35,7 +35,7 @@ describe('axios cancel', () => {
       requestId: requestId
     })
       .then((res) => {
-        const {data} = res;
+        const { data } = res;
         expect(data.users).toBeTruthy();
       }).catch((thrown) => {
         expect(thrown).toBeNull();
