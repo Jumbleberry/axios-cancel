@@ -43,8 +43,9 @@ export default function patchAxios(axios, vue, options) {
     if (context && !requestId) {
       config.requestId = requestId = 'auto-generated-id-' + Math.floor(Math.random() * 100000000);
     }
+    let cachedResponseData = null;
     if (requestId && cacheManager.isCacheable(config)) {
-      const cachedResponseData = cacheManager.getResponse(requestId);
+      cachedResponseData = cacheManager.getResponse(requestId);
       if (cachedResponseData !== null) {
         // Replace default request adapter so it returns the cached response immediately
         config.adapter = () => {
@@ -59,7 +60,7 @@ export default function patchAxios(axios, vue, options) {
         };
       }
     }
-    if (!cachedResponseData) {
+    if (cachedResponseData !== null) {
       dispatchConfigEvent('onRequestStart', { config: config, payload: config });
       const source = CancelToken.source();
       config.cancelToken = source.token;
