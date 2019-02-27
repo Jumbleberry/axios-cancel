@@ -27,7 +27,9 @@ export default function patchAxios(axios, vue, options) {
   const cacheManager = new CacheManager(settings);
 
   // Mount global mixin on Vue root instance
-  vue.mixin(lifeCycle);
+  if (vue) {
+    vue.mixin(lifeCycle);
+  }
 
   /**
    * Global request interceptor
